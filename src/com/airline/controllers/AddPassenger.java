@@ -127,11 +127,14 @@ public class AddPassenger extends HttpServlet {
 			
 			ServletContext sc = this.getServletContext();
 			
-			ArrayList<Passenger> pList = new ArrayList<Passenger>();
+			synchronized (this) {
+			
+			ArrayList<Passenger> pList =  (ArrayList<Passenger>) sc.getAttribute("passengers");
 			
 			pList.add(p);
 			
 			sc.setAttribute("passengers", pList);
+			}
 			
 			response.sendRedirect("");
 			
