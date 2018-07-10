@@ -39,7 +39,14 @@ public class AddPassenger extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
+		
+		//the first time the info boxes are displayed make the first name blank not null
+		request.setAttribute("first_name", "");
+		request.setAttribute("last_name", "");
+		request.setAttribute("dob", "");
+
+		
+		
 		RequestDispatcher view = request.getRequestDispatcher("WEB-INF/views/add_passenger.jsp");
 		
 		view.forward(request,  response);
@@ -64,9 +71,12 @@ public class AddPassenger extends HttpServlet {
 			
 			request.setAttribute("errors", true);
 			request.setAttribute("firstname_error", true);
+			//Initially set the first name box to blank not null
+			request.setAttribute("first_name", "");
 					
 		}else {
 			p.setFirstName(firstName);
+			request.setAttribute("first_name", firstName);
 		}
 		
 		String lastName = request.getParameter("last-name");
@@ -77,21 +87,24 @@ public class AddPassenger extends HttpServlet {
 			
 			request.setAttribute("errors", true);
 			request.setAttribute("lastname_error", true);
+			request.setAttribute("last_name", "");
 					
 		}else {
 			p.setLastName(lastName);
+			request.setAttribute("last_name", lastName);
 		}
 
 		String dob_raw = request.getParameter("dob");
-		
+		//format dob regard / as part of the date format
 		String dobArray[] = dob_raw.split("\\/");
-		
+		//dob pattern
 		String pattern = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
 		Pattern r = Pattern.compile(pattern);
 		
 		Matcher m = r.matcher(dob_raw);
 		
 		if(m.find()) {
+			//put day month and year in an array
 			String month = dobArray[0];
 			String day = dobArray[1];
 			String year = dobArray[2];
@@ -106,11 +119,20 @@ public class AddPassenger extends HttpServlet {
 			System.out.println(dob);
 			
 			p.setDob(dob);
+			request.setAttribute("dob", dob_raw);
 		}
 		else {
+			//if user types invalid dob
 			System.out.println("Invalid date of birth");
+			//set errors variable to true
 			request.setAttribute("errors", true);
+			
 			request.setAttribute("date_format_error", true);
+			request.setAttribute("dob", dob_raw);
+			//if user leaves dob empty make it an empty string not null
+			if(dob_raw.length() == 0) {
+				request.setAttribute("dob", "");
+			}
 		}
 		String gender = request.getParameter("gender");
 		System.out.println("Gender: " + gender);
